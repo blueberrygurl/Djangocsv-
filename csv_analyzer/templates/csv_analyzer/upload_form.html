@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Téléchargement CSV</title>
+    <style>
+       @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap');
+
+body {
+    font-family: 'Lexend', sans-serif;
+    background: linear-gradient(145deg, #f8e8f5, #e0f0f8);
+    color: #555555;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    overflow: hidden;
+    text-align: center;
+    background-image: url('https://www.transparenttextures.com/patterns/clouds.png'); /* Optionnel : texture de nuages */
+    background-size: cover;
+}
+
+.container {
+    background: rgba(255, 255, 255, 0.7);
+    padding: 40px 50px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 500px;
+    animation: fadeIn 1s ease-in-out;
+}
+
+h2 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    color: #7da0d9;
+}
+
+label {
+    display: block;
+    margin-bottom: 15px;
+    font-weight: 500;
+    color: #757575;
+    font-size: 1.1rem;
+}
+
+input[type="file"] {
+    padding: 12px;
+    border: 1px solid #87cefa;
+    border-radius: 10px;
+    width: 100%;
+    background: rgba(240, 240, 255, 0.8);
+    color: #555555;
+    font-size: 1rem;
+    transition: box-shadow 0.3s ease, border-color 0.3s;
+}
+
+input[type="file"]:focus {
+    outline: none;
+    box-shadow: 0 0 10px #87cefa;
+    border-color: #add8e6;
+}
+
+button[type="submit"] {
+    background: linear-gradient(135deg, #e6a4d7, #94c7f5);
+    color: #fff;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+button[type="submit"]:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 25px rgba(135, 206, 250, 0.6);
+}
+
+button[type="submit"]:active {
+    transform: translateY(0);
+    box-shadow: 0 8px 15px rgba(135, 206, 250, 0.5);
+}
+
+.error-message {
+    background-color: #ff6f6f;
+    color: #ffffff;
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 20px;
+    display: none;
+    font-size: 1rem;
+}
+
+/* Ajout d'une animation douce */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 30px;
+        max-width: 90%;
+    }
+}
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Télécharger un fichier CSV</h2>
+        <form id="uploadForm" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <label for="csv_file">Veuillez sélectionner un fichier CSV :</label>
+            <input type="file" name="csv_file" id="csv_file">
+            <p class="error-message" id="errorMessage">Aucun fichier sélectionné. Veuillez en choisir un.</p>
+            <button type="submit">Télécharger</button>
+        </form>
+    </div>
+
+    
+
+    <script>
+        const form = document.getElementById('uploadForm');
+        const fileInput = document.getElementById('csv_file');
+        const errorMessage = document.getElementById('errorMessage');
+
+        form.addEventListener('submit', function (event) {
+            if (!fileInput.files.length) {
+                event.preventDefault();
+                errorMessage.style.display = 'block';
+            } else {
+                errorMessage.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

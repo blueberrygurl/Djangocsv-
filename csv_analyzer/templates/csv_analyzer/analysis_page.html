@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyse Statistique des Données</title>    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+       @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+
+:root {
+    --primary-color: #87cefa; /* Bleu clair */
+    --secondary-color: #e6a4d7; /* Rose doux */
+    --background-color: #f8e8f5; /* Fond rose doux */
+    --card-background: rgba(255, 255, 255, 0.8); /* Cartes légèrement teintées de blanc */
+    --text-color: #555555; /* Texte gris foncé */
+    --border-radius: 12px;
+    --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); /* Ombre douce */
+}
+
+body {
+    font-family: 'Lexend', sans-serif;
+            background: linear-gradient(145deg, #f8e8f5, #e0f0f8);
+            color: #555555;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            min-height: 100vh;
+            margin: 0;
+            text-align: center;
+            background-image: url('https://www.transparenttextures.com/patterns/clouds.png');
+            background-size: cover;
+}
+
+.dashboard {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.header {
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 40px;
+    padding: 20px;
+    background: var(--card-background);
+    color: var(--primary-color);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+}
+
+h1{
+    font-size: 2rem;
+}
+
+.column-selector {
+    background-color: var(--card-background);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    margin-bottom: 30px;
+}
+
+.column-selector form {
+    display: flex;
+    gap: 10px; /* Espacement entre le select et le bouton */
+    align-items: center;
+}
+
+.select-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+select {
+    padding: 12px;
+    border: 1px solid var(--primary-color);
+    border-radius: 8px;
+    background: var(--card-background);
+    color: var(--text-color);
+    font-size: 1rem;
+    width: auto;
+    max-width: 300px;
+    margin-bottom: 15px;
+}
+
+select option[value=""] {
+    color: #888;
+}
+
+select:focus {
+    outline: none;
+    border-color: #4682b4;
+    box-shadow: 0 0 5px rgba(135, 206, 250, 0.3);
+}
+
+.button-group {
+    display: flex;
+    gap: 10px; /* Espacement entre les deux boutons */
+    align-items: center;
+}
+
+button {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    width: auto;
+    max-width: 250px;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background-color: var(--secondary-color);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.stats-card {
+    background-color: var(--card-background);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    transition: transform 0.3s ease;
+    border: 1px solid #e4e4e4;
+}
+
+.stats-card:hover {
+    transform: translateY(-5px);
+}
+
+.stats-card h3 {
+    color: var(--primary-color);
+    margin-top: 0;
+    border-bottom: 3px solid var(--secondary-color);
+    padding-bottom: 10px;
+    font-size: 1.5rem;
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0;
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(135, 206, 250, 0.3);
+    font-size: 1rem;
+}
+
+.navigation {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    gap: 20px; /* Espacement entre les boutons */
+}
+
+.navigation button {
+    width: auto;
+    max-width: 250px;
+}
+
+p {
+    background: var(--secondary-color);
+    color: white;
+    padding: 12px;
+    margin: 2px, 0px;
+    border-radius: var(--border-radius);
+    text-align: center;
+    font-size: 1.2rem;
+}
+
+@media (max-width: 768px) {
+    .header {
+        font-size: 1.5rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    select, button {
+        width: 100%;
+        max-width: none;
+    }
+}
+
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="header">
+            <h1> Analyse Statistique des Données</h1>
+        </div>
+
+        <div class="column-selector">
+            <form method="GET" action="{% url 'analyze_csv' %}" class="flex gap-4">
+                <div class="select-container">
+                    <select name="column" required>
+                        <option value="">Sélectionnez une colonne</option>
+                        {% for header in headers %}
+                            <option value="{{ header }}" {% if header == selected_column %}selected{% endif %}>
+                                {{ header }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="button-group">
+                    <button type="submit">Analyser</button>
+                    <a href="{% url 'visualize_data' %}">
+                        <button type="button">Visualiser les données</button>
+                    </a>
+                    <a href="{% url 'upload_csv' %}" style="text-decoration: none;">
+                        <button type="button" class="back-button">
+                            <i class="fas fa-arrow-left"></i>
+                            Retour à l'acceuil
+                        </button>
+                    </a>
+                    
+                    
+                </div>
+            </form>
+        </div>
+
+        {% if analysis %}
+            <div class="stats-grid">
+                {% for column, stats in analysis.items %}
+                    <div class="stats-card">
+                        <h3>{{ column }}</h3>
+                        {% if stats.type == "numeric" %}
+                            <div class="stat-item">
+                                <span>Type</span>
+                                <span>Numérique</span>
+                            </div>
+                            <div class="stat-item">
+                                <span>Moyenne</span>
+                                <span>{{ stats.mean }}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span>Médiane</span>
+                                <span>{{ stats.median }}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span>Minimum</span>
+                                <span>{{ stats.min }}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span>Maximum</span>
+                                <span>{{ stats.max }}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span>Écart-type</span>
+                                <span>{{ stats.stddev }}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span>Q1</span>
+                                <span>{{ stats.q1 }}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span>Q3</span>
+                                <span>{{ stats.q3 }}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span>IQR</span>
+                                <span>{{ stats.iqr }}</span>
+                            </div>
+                        {% else %}
+                            <div class="stat-item">
+                                <span>Type</span>
+                                <span>Catégoriel</span>
+                            </div>
+                            <div class="stat-item">
+                                <span>Valeurs uniques</span>
+                                <span>{{ stats.unique_count }}</span>
+                            </div>
+                            {% for value, freq in stats.frequencies.items %}
+                            <div class="stat-item">
+                                <span>{{ value }}</span>
+                                <span>{{ freq.count }} ({{ freq.percentage }}%)</span>
+                            </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>Aucune analyse disponible. Veuillez sélectionner une colonne.</p>
+        {% endif %}
+
+        
+    </div>
+</body>
+</html>

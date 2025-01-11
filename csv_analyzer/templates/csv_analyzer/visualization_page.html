@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualisation des données</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap');
+
+        body {
+            font-family: 'Lexend', sans-serif;
+            background: linear-gradient(145deg, #f8e8f5, #e0f0f8);
+            color: #555555;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            min-height: 100vh;
+            margin: 0;
+            text-align: center;
+            background-image: url('https://www.transparenttextures.com/patterns/clouds.png');
+            background-size: cover;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 1200px;
+            margin-bottom: 20px;
+        }
+
+        .navbar h1 {
+            color: #87cefa;
+            font-size: 2rem;
+        }
+
+        .main-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .sidebar {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            height: fit-content;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+
+
+        label {
+            color: #555555;
+            font-size: 1rem;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #87cefa;
+            border-radius: 10px;
+            background: rgba(240, 240, 255, 0.8);
+            color: #555555;
+            font-size: 1rem;
+            transition: box-shadow 0.3s ease, border-color 0.3s;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #4682b4;
+            box-shadow: 0 0 10px rgba(135, 206, 250, 0.3);
+        }
+
+        button {
+            background: linear-gradient(135deg, #e6a4d7, #94c7f5);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 24px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(135, 206, 250, 0.5);
+        }
+
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .visualization-area {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            min-height: 500px;
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #555555;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state p {
+            font-size: 1rem;
+        }
+
+        @media (max-width: 1024px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .navbar {
+                padding: 10px;
+            }
+
+            .visualization-area {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <h1>Visualisation des Données</h1>
+    </nav>
+
+    <div class="main-container">
+        <aside class="sidebar">
+            <form method="GET" action="{% url 'visualize_data' %}">
+                <div class="form-group">
+                    <label for="plot_type"><h3>Type de graphique</h3></label>
+                    <select name="plot_type" id="plot_type">
+                        <option value="histplot">Histogramme</option>
+                        <option value="barplot">Diagramme en barres</option>
+                        <option value="scatterplot">Nuage de points</option>
+                        <option value="boxplot">Boîte à moustaches</option>
+                        <option value="violinplot">Graphique violon</option>
+                        <option value="lineplot">Graphique en ligne</option>
+                        <option value="heatmap">Carte de chaleur</option>
+                        <option value="countplot">Graphique de comptage</option>
+                        <option value="kdeplot">Graphique KDE</option>
+                    </select>
+                </div>
+
+                <div class="axis-selector">
+                    <h3>colonne de l'axe X</h3>
+                    <select name="column_x" id="column_x">
+                        {% for column in headers %}
+                            <option value="{{ column }}">{{ column }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="axis-selector">
+                    <h3>colonne de l'axe Y</h3>
+                    <select name="column_y" id="column_y">
+                        {% for column in headers %}
+                            <option value="{{ column }}">{{ column }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="button-container">
+                    <button type="submit">
+                        <i class="fas fa-chart-line"></i>
+                        Générer le graphique
+                    </button>
+
+                    <a href="{% url 'analyze_csv' %}" style="text-decoration: none;">
+                        <button type="button" class="back-button">
+                            <i class="fas fa-arrow-left"></i>
+                            Retour à l'analyse
+                        </button>
+                    </a>
+                    <a href="{% url 'upload_csv' %}" style="text-decoration: none;">
+                        <button type="button" class="back-button">
+                            <i class="fas fa-arrow-left"></i>
+                            Retour à l'acceuil
+                        </button>
+                    </a>
+                </div>
+            </form>
+        </aside>
+
+        <main class="visualization-area">
+            {% if graph_html %}
+                <h2>{{ title }}</h2> 
+                {{ graph_html|safe }}
+            {% else %}
+                <div class="empty-state">
+\                    <i class="fas fa-chart-bar"></i>
+                    <p>Sélectionnez les colonnes à visualiser et le type de graphique souhaité</p>
+                </div>
+            {% endif %}
+        </main>
+    </div>
+</body>
+</html>
